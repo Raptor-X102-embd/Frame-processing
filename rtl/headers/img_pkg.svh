@@ -1,3 +1,6 @@
+`ifndef IMG_PKG
+`define IMG_PKG
+
 package img_pkg;
 
     typedef struct {
@@ -6,3 +9,5 @@ package img_pkg;
         logic [7:0] B;
     } pixel_t;
 endpackage
+
+`endif

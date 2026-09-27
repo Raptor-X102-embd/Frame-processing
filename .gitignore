@@ -1,0 +1,8 @@
+*.vcd
+*.elf
+*.o
+*.mem
+*.raw
+*.xxd
+build/
+obj_dir/
