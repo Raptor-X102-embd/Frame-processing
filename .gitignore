@@ -4,5 +4,7 @@
 *.mem
 *.raw
 *.xxd
+*.log
+*.png
 build/
 obj_dir/

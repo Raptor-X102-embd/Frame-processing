@@ -130,8 +130,8 @@ module pixel_stream #(
             do_proc_pixel <= 1'b0;
             valid_i       <= 1'b0; 
         end else begin
-            do_proc_pixel <= (h_cnt >= H_BACK_PORCH_CNT + 3 && // pixel [2] of row
-                              h_cnt <= H_ACTIVE_CNT + 2     && // replicated last pixel
+            do_proc_pixel <= (h_cnt >= H_BACK_PORCH_CNT + 2 && // pixel [2] of row
+                              h_cnt <= H_ACTIVE_CNT + 1     && // replicated last pixel
                               v_cnt >= V_BACK_PORCH_CNT + 2 && // row [2]
                               v_cnt <= V_ACTIVE_CNT + 1);      // replicated last row
 
