@@ -11,7 +11,10 @@ module pixel_stream #(
     parameter V_ACTIVE_LINES        = 480,
     parameter V_FRONT_PORCH_LINES = 10,
     parameter V_SYNC_LINES        = 2,
-    parameter V_BACK_PORCH_LINES  = 33
+    parameter V_BACK_PORCH_LINES  = 33,
+
+    parameter WINDOW_W = 3,
+    parameter WINDOW_H = 3
 )(
     input                clk,
     input                rst_n,
@@ -61,8 +64,8 @@ module pixel_stream #(
     proc_img #(
         .FRAME_W (H_ACTIVE_PIX+2),
         .FRAME_H (V_ACTIVE_LINES+2),
-        .WINDOW_W(3),
-        .WINDOW_H(3)
+        .WINDOW_W(WINDOW_W),
+        .WINDOW_H(WINDOW_H)
     ) u_proc_img (
         .clk(clk),
         .rst_n(rst_n),
@@ -130,15 +133,15 @@ module pixel_stream #(
             do_proc_pixel <= 1'b0;
             valid_i       <= 1'b0; 
         end else begin
-            do_proc_pixel <= (h_cnt >= H_BACK_PORCH_CNT + 2 && // pixel [2] of row
-                              h_cnt <= H_ACTIVE_CNT + 1     && // replicated last pixel
-                              v_cnt >= V_BACK_PORCH_CNT + 2 && // row [2]
-                              v_cnt <= V_ACTIVE_CNT + 1);      // replicated last row
+            do_proc_pixel <= (h_cnt >= H_BACK_PORCH_CNT + WINDOW_W - 1 && // pixel [2] of row
+                              h_cnt < H_ACTIVE_CNT + WINDOW_W - 1     && // replicated last pixel
+                              v_cnt >= V_BACK_PORCH_CNT + WINDOW_H - 1 && // row [2]
+                              v_cnt < V_ACTIVE_CNT + WINDOW_H - 1);      // replicated last row
 
             valid_i <= (h_cnt >= H_BACK_PORCH_CNT && // replicated pixel [0] of row
-                        h_cnt <= H_ACTIVE_CNT + 1 && // replicated last pixel
+                        h_cnt < H_ACTIVE_CNT + WINDOW_W - 1     && // replicated last pixel
                         v_cnt >= V_BACK_PORCH_CNT && // replicated row [0]
-                        v_cnt <= V_ACTIVE_CNT + 1);  // replicated last row
+                        v_cnt < V_ACTIVE_CNT + WINDOW_H - 1);      // replicated last row
 
             case (hp_state) 
                 HP_IDLE: begin 

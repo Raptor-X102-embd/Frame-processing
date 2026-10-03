@@ -99,16 +99,42 @@ module proc_img #(
         end
     end
 
-    inverse_filter #(
-        .WINDOW_W(WINDOW_W),
-        .WINDOW_H(WINDOW_H)
-    ) u_filter (
-        .clk(clk),
-        .rst_n(rst_n),
-        .do_proc_pixel(do_proc_pixel_pr),
-        .wsr(wsr),
-        .pixel_o(pixel_o),
-        .valid_o(valid_o)
-    ); 
+    // For colour retention D = sum(N), 
+    // Q_WIDTH − FRAC_PART − 1  ≥  ceil(log2(max|N/D|))
+    // FRAC_PART ≥ 8 + log2(WINDOW_H*WINDOW_W) 
+    
+    localparam logic [WINDOW_H*WINDOW_W-1:0][31:0] COEFF_N = '{
+        32'd0, 32'd0, 32'd0,
+        32'd0, 32'd1, 32'd0,
+        32'd0, 32'd0, 32'd0
+    };
+    localparam logic [WINDOW_H*WINDOW_W-1:0][31:0] COEFF_D = '{default: 32'd1};
 
+    weighted_sum_3x3 #(
+        .WINDOW_W (WINDOW_W),
+        .WINDOW_H (WINDOW_H),
+        .Q_WIDTH  (20),
+        .FRAC_PART(15),
+        .COEFF_N  (COEFF_N),
+        .COEFF_D  (COEFF_D)
+    ) u_filter (
+        .clk          (clk),
+        .rst_n        (rst_n),
+        .do_proc_pixel(do_proc_pixel_pr),
+        .wsr          (wsr),
+        .pixel_o      (pixel_o),
+        .valid_o      (valid_o)
+    ); 
+    
+   // box_blur3x3 #(
+   //     .WINDOW_W(WINDOW_W),
+   //     .WINDOW_H(WINDOW_H)
+   // ) u_filter (
+   //     .clk(clk),
+   //     .rst_n(rst_n),
+   //     .do_proc_pixel(do_proc_pixel_pr),
+   //     .wsr(wsr),
+   //     .pixel_o(pixel_o),
+   //     .valid_o(valid_o)
+   // );
 endmodule
