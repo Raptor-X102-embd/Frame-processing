@@ -42,9 +42,8 @@ def main() -> None:
     first_bad = None
     max_abs_diff = 0
 
-    # invert reference once and compare
     for i in range(total):
-        expected = 255 - ref[i]
+        expected = ref[i]
         got = act[i]
         if expected != got:
             mismatches += 1
